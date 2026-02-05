@@ -1,0 +1,19 @@
+[requires]
+# Мы просим Conan установить Qt версии 6.7.0
+# и сразу говорим, какие модули нам нужны.
+qt/6.7.0
+
+[options]
+# Включаем только то, что нам нужно, чтобы не качать лишнего
+qt/*:with_core=True
+qt/*:with_gui=True
+qt/*:with_network=True
+# Отключаем все остальное
+qt/*:with_widgets=False
+qt/*:with_svg=False
+qt/*:with_statemachine=False
+# ... и так далее, но этого достаточно
+
+[generators]
+CMakeDeps
+CMakeToolchain
