@@ -309,6 +309,7 @@ void mWindow::onDivClicked() {
     ui->textEdit->setText(currentText + "/");
 
     isTypingSecond = true;
+    secondMemory = true;
 }
 
 void mWindow::checkAndClearDisplay() {
