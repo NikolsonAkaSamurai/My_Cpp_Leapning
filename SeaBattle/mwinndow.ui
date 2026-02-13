@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>924</width>
-    <height>661</height>
+    <width>775</width>
+    <height>554</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -26,83 +26,205 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QWidget" name="playerSpace1" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>450</width>
-        <height>600</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>450</width>
-        <height>600</height>
-       </size>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QWidget" name="playerSpace2" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>450</width>
-        <height>600</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>450</width>
-        <height>600</height>
-       </size>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-      </layout>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <widget class="QWidget" name="battlePage">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QWidget" name="playerSpace1" native="true"/>
+        </item>
+        <item>
+         <widget class="QWidget" name="playerSpace2" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="startPage">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>75</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Морсkои бои онлаин V0.5</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QPushButton" name="hostGameButton">
+            <property name="minimumSize">
+             <size>
+              <width>124</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>создать игру</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="hostIpEdit">
+            <property name="text">
+             <string>192.168.1.1</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QPushButton" name="joinGameButton">
+            <property name="text">
+             <string>подkлючиться k игре</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="joinIpEdit">
+            <property name="text">
+             <string>192.168.1.1</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item alignment="Qt::AlignLeft">
+           <widget class="QPushButton" name="vsComputerButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>127</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Игра против kомпа</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="preparingForBattle">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <item alignment="Qt::AlignTop">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>меню подготоkи k бою - перетащи kорабли с базы на поле боя и нажми готов</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <property name="spacing">
+           <number>20</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>перетащи kорабли со своеи безы в поле боя справа</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>поле боя</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <property name="spacing">
+           <number>18</number>
+          </property>
+          <item>
+           <widget class="QWidget" name="shipPaletteWidget" native="true"/>
+          </item>
+          <item>
+           <widget class="QWidget" name="placementFieldWidget" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>377</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item alignment="Qt::AlignBottom">
+         <widget class="QPushButton" name="readyToBattleButton">
+          <property name="text">
+           <string>K бою готов!</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -112,7 +234,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>924</width>
+     <width>775</width>
      <height>22</height>
     </rect>
    </property>

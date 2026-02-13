@@ -7,13 +7,16 @@
 mWinndow::mWinndow(QWidget *parent) : QMainWindow(parent), ui(new Ui::mWinndow) {
     ui->setupUi(this);
 
-    // Создаём PlayerSpace (твой наследник QWidget)
-    PlayerSpace* leftPlayer = new PlayerSpace();
-    // Вставляем в layout дизайнера
-    ui->verticalLayout->addWidget(leftPlayer);  // ← verticalLayout из playerSpace1
+    // Создаём левое поле
+    // 1. Создаём поле для левого игрока
+    //    и сразу говорим: "твой родитель — playerSpace1"
+    PlayerSpace* leftPlayer = new PlayerSpace(ui->playerSpace1);
 
-    PlayerSpace* rightPlayer = new PlayerSpace();
-    ui->verticalLayout_2->addWidget(rightPlayer);  // ← verticalLayout_2 из playerSpace2
+    // 2. Создаём поле для правого игрока
+    //    и сразу говорим: "твой родитель — playerSpace2"
+    PlayerSpace* rightPlayer = new PlayerSpace(ui->playerSpace2);
+    rightPlayer->setEnabled(false); // вражеское поле выключено
+    ui->stackedWidget->setCurrentWidget(ui->startPage);
 }
 
 mWinndow::~mWinndow() {
