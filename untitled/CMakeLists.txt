@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.20)
 project(untitled)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -17,7 +17,16 @@ find_package(Qt6 COMPONENTS
         REQUIRED
 )
 
-add_executable(untitled main.cpp
+add_executable(untitled
+        main.cpp
+        vacancy.cpp
+        vacancy.h
+        hhparser.cpp
+        hhparser.h
+        Controller.h
+        Controller.cpp
+        MainWindow.h
+        mainwindow.cpp
 )
 
 target_link_libraries(untitled
