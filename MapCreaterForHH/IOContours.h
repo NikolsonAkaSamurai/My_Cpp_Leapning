@@ -17,17 +17,6 @@ public:
         std::ofstream file(fullPath, std::ios::binary);
         if (!file) return;
 
-        // Сохраняем опорную точку
-        Point pos = c.getPositionPoint();
-        double x = pos.getX();
-        double y = pos.getY();
-        file.write(reinterpret_cast<const char*>(&x), sizeof(x));
-        file.write(reinterpret_cast<const char*>(&y), sizeof(y));
-
-        // Сохраняем масштаб
-        double scale = c.getScale();
-        file.write(reinterpret_cast<const char*>(&scale), sizeof(scale));
-
         // Сохраняем имя
         size_t nameLen = c.getName().length();
         file.write(reinterpret_cast<const char*>(&nameLen), sizeof(nameLen));
@@ -55,20 +44,14 @@ public:
 
         if (!file) return result;
 
-        double x, y, scale;
-        file.read(reinterpret_cast<char*>(&x), sizeof(x));
-        file.read(reinterpret_cast<char*>(&y), sizeof(y));
-        file.read(reinterpret_cast<char*>(&scale), sizeof(scale));
-
-        result.setPositionPoint(x, y);
-        result.setScale(scale);
-
+        // Читаем имя
         size_t nameLen;
         file.read(reinterpret_cast<char*>(&nameLen), sizeof(nameLen));
         std::string loadedName(nameLen, ' ');
         file.read(&loadedName[0], nameLen);
         result.setName(loadedName);
 
+        // Читаем точки
         size_t pointCount;
         file.read(reinterpret_cast<char*>(&pointCount), sizeof(pointCount));
 
@@ -81,6 +64,19 @@ public:
 
         file.close();
         return result;
+    }
+
+    // Вспомогательный метод для получения списка контуров
+    static std::vector<std::string> getAvailableContours() {
+        std::vector<std::string> contours;
+        std::filesystem::create_directories(CONTOURS_DIR);
+
+        for (const auto& entry : std::filesystem::directory_iterator(CONTOURS_DIR)) {
+            if (entry.path().extension() == ".cnt") {
+                contours.push_back(entry.path().stem().string());
+            }
+        }
+        return contours;
     }
 };
 

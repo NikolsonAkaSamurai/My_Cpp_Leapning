@@ -3,9 +3,11 @@
 #include "raylib.h"
 #include "Contour.h"
 #include "IOContours.h"
+#include "GeoCalculator.h"
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <vector>
 
 #define DEG_TO_RAD 0.01745329251994329576923690768489
 
@@ -15,7 +17,9 @@ private:
     const int screenHeight = 900;
 
     Texture2D background;
-    Contour currentContour;
+
+    // Геокалькулятор для пересчетов
+    GeoCalculator geoCalc;
 
     // Состояния рисования
     enum Stage {
@@ -30,13 +34,13 @@ private:
 
     Stage currentStage;
 
-    // Для калибровки
-    Vector2 refPixel;           // опорная точка на картинке
-    double refLat, refLon;       // реальные координаты опорной точки
-    Vector2 scalePointA;         // первая точка масштаба
-    Vector2 scalePointB;         // вторая точка масштаба
-    double realDistance;         // реальное расстояние в км
-    double scale;                 // км/пиксель
+    // Для калибровки (ТЕПЕРЬ Point вместо Vector2!)
+    Point refPixel;              // опорная точка на картинке
+    double refLat, refLon;        // реальные координаты опорной точки
+    Point scalePointA;            // первая точка масштаба
+    Point scalePointB;            // вторая точка масштаба
+    double realDistance;          // реальное расстояние в км
+    double scale;                  // км/пиксель
 
     // Для ввода текста
     char latInput[32];
@@ -46,8 +50,8 @@ private:
     int inputCharCount;
     int activeField;  // 0-широта, 1-долгота, 2-расстояние, 3-имя
 
-    // Временные точки для отображения при рисовании
-    std::vector<Vector2> tempPoints;  // пиксельные точки для отображения
+    // Временные точки для отображения при рисовании (ТЕПЕРЬ Point!)
+    std::vector<Point> displayPoints;
 
 public:
     DrawWindow() {
@@ -66,9 +70,10 @@ public:
 
         // Инициализация
         currentStage = STAGE_PLACE_REF_POINT;
-        refPixel = {0, 0};
+        refPixel = Point(0, 0);
         refLat = refLon = 0;
-        scalePointA = scalePointB = {0, 0};
+        scalePointA = Point(0, 0);
+        scalePointB = Point(0, 0);
         realDistance = 0;
         scale = 1.0;
 
@@ -76,7 +81,7 @@ public:
         inputCharCount = 0;
         activeField = 0;
 
-        tempPoints.clear();
+        displayPoints.clear();
     }
 
     ~DrawWindow() {
@@ -159,7 +164,9 @@ private:
     }
 
     void handleInput() {
-        Vector2 mousePos = GetMousePosition();
+        // Получаем позицию мыши как Point
+        Vector2 mouseVec = GetMousePosition();
+        Point mousePos(mouseVec.x, mouseVec.y);
 
         switch(currentStage) {
             case STAGE_PLACE_REF_POINT:
@@ -184,6 +191,10 @@ private:
                     } else if (activeField == 1) {
                         // Закончили ввод долготы
                         refLon = atof(lonInput);
+
+                        // Устанавливаем опорную точку в калькулятор
+                        geoCalc.setReferencePoint(refPixel, refLat, refLon);
+
                         currentStage = STAGE_SCALE_FIRST;
                         inputCharCount = 0;
                     }
@@ -212,11 +223,13 @@ private:
                     realDistance = atof(distanceInput);
 
                     // Вычисляем масштаб
-                    double pixelDist = sqrt(
-                        pow(scalePointB.x - scalePointA.x, 2) +
-                        pow(scalePointB.y - scalePointA.y, 2)
-                    );
+                    double dx = scalePointB.getX() - scalePointA.getX();
+                    double dy = scalePointB.getY() - scalePointA.getY();
+                    double pixelDist = sqrt(dx*dx + dy*dy);
                     scale = realDistance / pixelDist;  // км/пиксель
+
+                    // Устанавливаем масштаб в калькулятор
+                    geoCalc.setScale(scale);
 
                     currentStage = STAGE_DRAWING;
                 }
@@ -224,15 +237,15 @@ private:
 
             case STAGE_DRAWING:
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    // Добавляем точку
-                    currentContour.addPoint(mousePos.x, mousePos.y);
+                    // Сохраняем пиксель для отображения
+                    displayPoints.push_back(mousePos);
                 }
 
-                if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && currentContour.getPointCount() > 0) {
-                    currentContour.delLastPoint();
+                if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && displayPoints.size() > 0) {
+                    displayPoints.pop_back();
                 }
 
-                if (IsKeyPressed(KEY_S) && currentContour.getPointCount() > 2) {
+                if (IsKeyPressed(KEY_S) && displayPoints.size() > 2) {
                     currentStage = STAGE_SAVE;
                     inputCharCount = 0;
                     nameInput[0] = '\0';
@@ -242,9 +255,19 @@ private:
             case STAGE_SAVE:
                 handleNameInput();
                 if (IsKeyPressed(KEY_ENTER) && inputCharCount > 0) {
-                    // Сохраняем контур
-                    currentContour.setName(nameInput);
-                    IOContours::writeContour(currentContour, nameInput);
+                    // Создаем новый контур с реальными координатами
+                    Contour contourToSave;
+                    contourToSave.setName(nameInput);
+
+                    // Переводим все пиксели в реальные координаты через GeoCalculator
+                    for (const auto& pixel : displayPoints) {
+                        Point realPoint = geoCalc.pixelToGeo(pixel);
+                        contourToSave.addPoint(realPoint);
+                    }
+
+                    // Сохраняем
+                    IOContours::writeContour(contourToSave, nameInput);
+
                     currentStage = STAGE_DRAWING;
                 }
                 if (IsKeyPressed(KEY_ESCAPE)) {
@@ -274,7 +297,7 @@ private:
         // Рисуем калибровочные точки
         drawCalibrationPoints();
 
-        // Рисуем контур
+        // Рисуем контур (по displayPoints)
         drawContour();
 
         // Рисуем интерфейс
@@ -285,39 +308,39 @@ private:
 
     void drawCalibrationPoints() {
         // Опорная точка
-        if (refPixel.x != 0 || refPixel.y != 0) {
-            DrawCircle(refPixel.x, refPixel.y, 8, BLUE);
-            DrawText("REF", refPixel.x + 10, refPixel.y - 20, 15, BLUE);
+        if (refPixel.getX() != 0 || refPixel.getY() != 0) {
+            DrawCircle(refPixel.getX(), refPixel.getY(), 8, BLUE);
+            DrawText("REF", refPixel.getX() + 10, refPixel.getY() - 20, 15, BLUE);
         }
 
         // Точки масштаба
-        if (scalePointA.x != 0 || scalePointA.y != 0) {
-            DrawCircle(scalePointA.x, scalePointA.y, 8, GREEN);
-            DrawText("A", scalePointA.x + 10, scalePointA.y - 20, 15, GREEN);
+        if (scalePointA.getX() != 0 || scalePointA.getY() != 0) {
+            DrawCircle(scalePointA.getX(), scalePointA.getY(), 8, GREEN);
+            DrawText("A", scalePointA.getX() + 10, scalePointA.getY() - 20, 15, GREEN);
         }
 
-        if (scalePointB.x != 0 || scalePointB.y != 0) {
-            DrawCircle(scalePointB.x, scalePointB.y, 8, YELLOW);
-            DrawText("B", scalePointB.x + 10, scalePointB.y - 20, 15, YELLOW);
+        if (scalePointB.getX() != 0 || scalePointB.getY() != 0) {
+            DrawCircle(scalePointB.getX(), scalePointB.getY(), 8, YELLOW);
+            DrawText("B", scalePointB.getX() + 10, scalePointB.getY() - 20, 15, YELLOW);
 
             // Линия между точками масштаба
-            DrawLine(scalePointA.x, scalePointA.y, scalePointB.x, scalePointB.y, GREEN);
+            DrawLine(scalePointA.getX(), scalePointA.getY(),
+                     scalePointB.getX(), scalePointB.getY(), GREEN);
         }
     }
 
     void drawContour() {
-        if (currentContour.getPointCount() >= 2) {
-            for (size_t i = 0; i < currentContour.getPointCount() - 1; i++) {
-                Point p1 = currentContour.getPoint(i);
-                Point p2 = currentContour.getPoint(i+1);
-                DrawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), RED);
+        if (displayPoints.size() >= 2) {
+            for (size_t i = 0; i < displayPoints.size() - 1; i++) {
+                DrawLine(displayPoints[i].getX(), displayPoints[i].getY(),
+                        displayPoints[i+1].getX(), displayPoints[i+1].getY(), RED);
             }
         }
 
-        for (size_t i = 0; i < currentContour.getPointCount(); i++) {
-            Point p = currentContour.getPoint(i);
-            DrawCircle(p.getX(), p.getY(), 5, RED);
-            DrawText(TextFormat("%zu", i+1), p.getX() + 10, p.getY() - 10, 10, WHITE);
+        for (size_t i = 0; i < displayPoints.size(); i++) {
+            DrawCircle(displayPoints[i].getX(), displayPoints[i].getY(), 5, RED);
+            DrawText(TextFormat("%zu", i+1),
+                    displayPoints[i].getX() + 10, displayPoints[i].getY() - 10, 10, WHITE);
         }
     }
 
@@ -359,8 +382,8 @@ private:
                 break;
 
             case STAGE_DRAWING:
-                DrawText(TextFormat("DRAWING | Scale: %.6f km/pixel | Points: %zu",
-                        scale, currentContour.getPointCount()), 20, 20, 18, GREEN);
+                DrawText(TextFormat("DRAWING | Points: %zu", displayPoints.size()),
+                        20, 20, 18, GREEN);
                 DrawText("LMB - add point | RMB - delete last | S - save", 20, 50, 15, WHITE);
                 break;
 
@@ -374,9 +397,9 @@ private:
                 break;
         }
 
-        // Информация о масштабе
-        if (scale > 0 && scale != 1.0) {
-            DrawText(TextFormat("1 pixel = %.3f meters", scale * 1000),
+        // Информация о масштабе (если есть)
+        if (geoCalc.isReady()) {
+            DrawText(TextFormat("Scale: %.6f km/pixel", geoCalc.getScale()),
                      screenWidth - 250, 20, 15, LIGHTGRAY);
         }
     }
