@@ -1,0 +1,5 @@
+C:/NikDevMSVC/My_MVSC_Projects/untitled/build/config.tests/static_link_order/CMakeFiles/objLib.dir
+C:/NikDevMSVC/My_MVSC_Projects/untitled/build/config.tests/static_link_order/CMakeFiles/staticLib.dir
+C:/NikDevMSVC/My_MVSC_Projects/untitled/build/config.tests/static_link_order/CMakeFiles/static_link_order_test.dir
+C:/NikDevMSVC/My_MVSC_Projects/untitled/build/config.tests/static_link_order/CMakeFiles/ALL_BUILD.dir
+C:/NikDevMSVC/My_MVSC_Projects/untitled/build/config.tests/static_link_order/CMakeFiles/ZERO_CHECK.dir

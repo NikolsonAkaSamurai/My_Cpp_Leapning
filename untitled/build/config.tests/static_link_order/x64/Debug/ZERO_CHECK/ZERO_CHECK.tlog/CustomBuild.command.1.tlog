@@ -1,0 +1,10 @@
+^C:\NIKDEVMSVC\MY_MVSC_PROJECTS\UNTITLED\BUILD\CONFIG.TESTS\STATIC_LINK_ORDER\CMAKEFILES\CCBB6A65ADAF971781FD0500BD0CD23F\GENERATE.STAMP.RULE
+setlocal
+C:\NikDevMSVC\Build_Tools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -SC:/NikDevMSVC/Qt/6.5.3/msvc2019_64/lib/cmake/Qt6/config.tests/static_link_order -BC:/NikDevMSVC/My_MVSC_Projects/untitled/build/config.tests/static_link_order --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/NikDevMSVC/My_MVSC_Projects/untitled/build/config.tests/static_link_order/static_link_order_test.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

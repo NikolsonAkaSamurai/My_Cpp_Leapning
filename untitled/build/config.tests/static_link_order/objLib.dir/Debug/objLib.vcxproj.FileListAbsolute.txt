@@ -1,0 +1,1 @@
+C:\NikDevMSVC\My_MVSC_Projects\untitled\build\config.tests\static_link_order\objLib.dir\Debug\objLib.lib

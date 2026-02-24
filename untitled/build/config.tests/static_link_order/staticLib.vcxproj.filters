@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\NikDevMSVC\Qt\6.5.3\msvc2019_64\lib\cmake\Qt6\config.tests\static_link_order\staticlib1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\NikDevMSVC\Qt\6.5.3\msvc2019_64\lib\cmake\Qt6\config.tests\static_link_order\staticlib2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\NikDevMSVC\Qt\6.5.3\msvc2019_64\lib\cmake\Qt6\config.tests\static_link_order\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{FE1EAD06-D2DC-3371-9AB0-F7F8C705118C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
